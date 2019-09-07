@@ -1,0 +1,52 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/iron-icons/hardware-icons.html">
+<link rel="import" href="/bower_components/paper-card/paper-card.html">
+<link rel="import" href="/bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/src/login/login.html">
+
+<dom-module id="polymer-app">
+    <template>
+    <style>
+      :host {
+        display: block;
+      }     
+    </style>
+    
+    <login-controler id="login" on-login-request-error="error" if="{{!authenticatedUsers}}" ></login-controler>
+    
+	
+	</template>
+    <script>
+        /**
+         * @customElement
+         * @polymer
+         */
+        class PolymerApp extends Polymer.Element {
+            static get is() {
+                return 'polymer-app';
+            }
+            static get properties() {
+                return {
+                    index: {
+                        type: String,
+                        value: 'polymer-app'
+                    },
+                    authenticatedUsers: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        reflectToAttribute: true
+                    }
+                };
+            }
+
+            error(e) {
+                this.authenticatedUsers = e.detail.authenticatedUsers;
+            }
+        }
+        window.customElements.define(PolymerApp.is, PolymerApp);
+    </script>
+</dom-module>

@@ -1,0 +1,89 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+
+<dom-module id="card-controler">
+    <template>
+        <style>
+            :host {
+                display: block
+            }
+        </style>
+        <iron-ajax
+        id="cardsAjax"
+        url="https://artichoke.platform.bbva.com/cards/v0/cards"
+        handle-as="json"
+        last-response="{{dataCards}}"
+        loading="{{loading}}"
+        ></iron-ajax>
+        <template is="dom-if" if="{{loading}}">
+            <paper-spinner active></paper-spinner>
+        </template>
+
+    <template is="dom-repeat" items="[[dataCards.data]]" as="card">
+        <paper-card image="[[card.images.0.url]]">
+            <div>
+                <paper-input label="Number" value="[[card.number]]" readonly></paper-input>
+                <paper-input label="Card type" value="[[card.cardType.name]]" readonly></paper-input>
+                <paper-input label="Amount" value="[[card.grantedCredits.0.amount]]" readonly></paper-input>
+            </div>
+        </paper-card>
+    </template>
+    </template>
+
+    <script>
+        /**
+         * `card-controler` Description
+         *
+         * @summary ShortDescription.
+         * @customElement
+         * @polymer
+         * @extends {Polymer.Element}
+         */
+        class CardControler extends Polymer.Element {
+            /**
+             * String providing the tag name to register the element under.
+             */
+            static get is() {
+                return 'card-controler';
+            }
+
+            /**
+             * Object describing property-related metadata used by Polymer features
+             */
+            static get properties() {
+                return {
+                    index: {
+                        type: String,
+                        value: 'card-controler'
+                    }
+                };
+            }
+
+            /**
+             * Instance of the element is created/upgraded. Use: initializing state,
+             * set up event listeners, create shadow dom.
+             * @constructor
+             */
+            constructor() {
+                super();
+            }
+
+            /**
+             * Use for one-time configuration of your component after local DOM is initialized. 
+             */
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+
+                });
+            }
+
+        }
+
+        window.customElements.define(CardControler.is, CardControler);
+    </script>
+</dom-module>

@@ -13,22 +13,25 @@
 
     <style>
 	:host {
-		display: flex;
-	}
-
-	.button-login{
-		background-color: #02a5a5;
-		color: white;
+		display: block;
 	}
 	
 	paper-input {
 		max-width: 400px;    
 	}
+    .bton{
+		background-color: #02a5a5;
+		color: white;
+        max-width: 150px;
+	}
+    container{
+        align-content: center;
+        }
 	
     </style>
     
 	<iron-ajax
-		id="grantingTicketAjax"
+		id="grantingTicket"
 		url="https://artichoke.platform.bbva.com/TechArchitecture/co/grantingTicket/V02"
 		method="post"
 		content-type="application/json"
@@ -38,16 +41,11 @@
 		loading="{{loading}}"
 		on-response="onLoginResponse"
 		on-error="onLoginError"		
-	></iron-ajax>
+	></iron-ajax>		
 
-		<paper-button class="button-login" on-click="showLogin" disabled="{{loading}}"><iron-icon icon="lock"> </iron-icon> Ingresar  </paper-button>
-	
-		<paper-dialog id="dialog" >
-
-			<h2>Login</h2>
-				
-			<div>
 			
+				
+			<div>			
 				<paper-input label = "Usuario" value="{{username}}">
 					<iron-icon icon = "account-circle"  prefix></iron-icon>
 				</paper-input>
@@ -61,14 +59,12 @@
 			<template is="dom-if" if="{{loading}}">
 				<paper-spinner active></paper-spinner>
 			</template>
-    <span style="color:red">{{errorMessage}}</span>
-    <div class="buttons">
-        <paper-button dialog-dismiss>
-            <iron-icon icon="close"></iron-icon> cancelar</paper-button>
+    <span style="color:red">{{error}}</span>
+    <div class="bton">
         <paper-button on-click="login" disabled="{{loading}}">
             <iron-icon icon="check"></iron-icon> ingresar</paper-button>
     </div>
-    </paper-dialog>
+
 
     </template>
 
@@ -87,11 +83,11 @@
                         type: String,
                         value: 'login-controler'
                     },
-                    errorMessage: String,
+                    error: String,
                     tsec: String,
                     username: String,
                     password: String,
-                    authenticated: {
+                    authenticatedUsers: {
                         type: Boolean,
                         value: false,
                         notify: true,
@@ -105,10 +101,9 @@
             }
 
             login(e) {
-                this.authenticated = false;
+                this.authenticatedUsers = false;
                 this.tsec = "";
-                localStorage.setItem("tsec", "");
-                this.errorMessage = "";
+                this.error = "";
                 this.loginRequest = {
                     "authentication": {
                         "userID": this.username,
@@ -125,35 +120,34 @@
                         "dialogId": ""
                     }
                 };
+                localStorage.setItem("tsec", "");
 
-                this.$.grantingTicketAjax.generateRequest();
+                this.$.grantingTicket.generateRequest();
             }
 
             onLoginResponse(e, request) {
-                console.log("tsec", request.xhr.getResponseHeader("tsec"));
                 if (request.xhr.getResponseHeader("tsec")) {
                     this.tsec = request.xhr.getResponseHeader("tsec");
                     localStorage.setItem("tsec", this.tsec);
-                    this.authenticated = true;
-                    this.$.dialog.close();
-                    this.dispatchEvent(new CustomEvent('login-request-success', {
+                    this.authenticatedUsers = true;
+                    this.dispatchEvent(new CustomEvent('login-success', {
                         detail: {
-                            authenticated: true
+                            authenticatedUsers: true
                         },
                         bubble: true,
                         composed: true
                     }));
                 } else {
-                    this.errorMessage = "Datos incorrectos (tsec not found!)";
+                    this.error = "Datos incorrectos";
                 }
             }
 
             onLoginError(e) {
-                this.authenticated = false;
-                this.errorMessage = "Datos incorrectos";
-                this.dispatchEvent(new CustomEvent('login-request-error', {
+                this.authenticatedUsers = false;
+                this.error = "Datos incorrectos";
+                this.dispatchEvent(new CustomEvent('login-error', {
                     detail: {
-                        authenticated: false
+                        authenticatedUsers: false
                     },
                     bubble: true,
                     composed: true

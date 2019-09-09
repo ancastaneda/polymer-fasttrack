@@ -6,6 +6,7 @@
 <link rel="import" href="/bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="/bower_components/paper-button/paper-button.html">
 <link rel="import" href="/src/login/login.html">
+<link rel="import" href="/src/card/card.html">
 
 <dom-module id="polymer-app">
     <template>
@@ -15,8 +16,8 @@
       }     
     </style>
     
-    <login-controler id="login" on-login-request-error="error" if="{{!authenticatedUsers}}" ></login-controler>
-    
+    <login-controler id="login" on-login-success="viewCard" on-login-error="error" if="{{!authenticatedUsers}}"></login-controler>
+    <card-controler id="card"></card-controler>
 	
 	</template>
     <script>
@@ -45,6 +46,11 @@
 
             error(e) {
                 this.authenticatedUsers = e.detail.authenticatedUsers;
+            }
+            viewCard(e) {
+                this.authenticatedUsers = e.detail.authenticatedUsers;
+                this.shadowRoot.getElementById('card').$.cardsAjax.headers['tsec'] = localStorage.getItem("tsec");
+                this.shadowRoot.getElementById('card').$.cardsAjax.generateRequest();
             }
         }
         window.customElements.define(PolymerApp.is, PolymerApp);
